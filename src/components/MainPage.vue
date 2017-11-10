@@ -1,10 +1,18 @@
 <template>
   <div class="wrapper_page">
     <main>
+
+      <div class="animation_banner">
+        <i class="fa fa-bell" aria-hidden="false"></i>
+        <span class="text_animation_banner">
+          {{ textBanner }}
+      </span>
+      </div>
+
       <div class="wrapper_section">
         <div class="wrapper_chat">
           <div class="message_chat_box">
-            <h3 class="title_chat">Test0at</h3>
+            <h3 class="title_chat">Test0chat</h3>
             <div class="template_message_chat">
               <div class="template_box_chat_avatar rounded-circle">
                 <img class="rounded-circle" src="https://thesocietypages.org/socimages/files/2009/05/vimeo.jpg" alt="avatar-user">
@@ -55,7 +63,7 @@
                 Напишите имя игры
                 <input type="text" maxlength="10" v-model="dataGame.titleCustomGame" @input="validateNameCustomGame" required>
               </label>
-              <button class="btn_submit btn_create_game" title="Только для авторизованных пользователей" type="submit" :disabled="!$store.state.userData.loginSuccess">
+              <button class="btn_submit btn_create_game" title="Только для авторизованных пользователей" type="submit">
                 <span> Создать игру</span>
                 <i class="fa fa-gamepad" aria-hidden="true"></i>
               </button>
@@ -84,7 +92,7 @@
               </tr>
               </tbody>
             </table>
-            <button title="Только для авторизованных пользователей" type="button" class="btn_submit connect_game_btn" :data-uid-game="game.uidGame" :data-name-game="game.nameGame" :disabled="!$store.state.userData.loginSuccess" @click="connectToGame">
+            <button title="Только для авторизованных пользователей" type="button" class="btn_submit connect_game_btn" :data-uid-game="game.uidGame" :data-name-game="game.nameGame" @click="connectToGame">
               <i class="fa fa-users" aria-hidden="true"></i>
               <span>Присоединиться</span>
             </button>
@@ -130,6 +138,7 @@
     data() {
       return {
         socket: null,
+        textBanner: 'Сперва вам нужно авторизоваться',
 
         dataGame: {
           titleCustomGame: '',
@@ -156,6 +165,7 @@
       },
       createGame(e) {
         e.preventDefault();
+        if (!this.$store.state.userData.loginSuccess) return this.callAnimationBanner();
         const nickUserCreated = this.$store.state.userData.login;
         const nameGame = this.dataGame.titleCustomGame;
         const lvlGame = this.dataGame.lvlGame;
@@ -171,6 +181,7 @@
         console.log(this.listGames);
       },
       connectToGame(e) {
+        if (!this.$store.state.userData.loginSuccess) return this.callAnimationBanner();
         this.$store.commit('setParticipantGame', true);
         this.$router.push({name: 'Game', params: {nameGame: `${e.currentTarget.dataset.nameGame}`}})
       },
@@ -239,6 +250,20 @@
         const minutes = date.getMinutes() > 9 ? date.getMinutes() : `0${date.getMinutes()}`;
         const seconds = date.getSeconds() > 9 ? date.getSeconds() : `0${date.getSeconds()}`;
         return `${hours}:${minutes}:${seconds}`;
+      },
+      callAnimationBanner() {
+        setTimeout(() => {
+          document.querySelector('.animation_banner').classList.add('animation_banner_start')
+        }, 500);
+
+        setTimeout(() => {
+          document.querySelector('.animation_banner_start').classList.remove('animation_banner_start');
+          document.querySelector('.animation_banner').classList.add('animation_banner_end');
+        }, 3000);
+
+        setTimeout(() => {
+          document.querySelector('.animation_banner_end').classList.remove('animation_banner_end')
+        }, 7000);
       }
     }
   }

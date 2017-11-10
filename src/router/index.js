@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import MainPage from '@/components/MainPage'
 import Auth from '@/components/Auth'
 import Game from '@/components/Game'
+import RatingPage from '@/components/RaitingUsers'
 
 Vue.use(Router);
 
@@ -23,6 +24,11 @@ export default new Router({
       path: '/Game/:nameGame',
       name: 'Game',
       component: Game
+    },
+    {
+      path: '/Rating',
+      name: 'RatingPage',
+      component: RatingPage
     },
     {
       path: '*',

@@ -265,35 +265,6 @@
     grid-template-columns: 1fr;
   }
 
-  .animation_banner {
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    width: 100%;
-    height: 4%;
-
-    opacity: 0;
-    color: black;
-    font-size: 23px;
-    z-index: 1;
-    background: rgba(139,197,65, 1);
-  }
-
-  .animation_banner_start {
-    transition: opacity 0.4s, transform ;
-    opacity: 1;
-  }
-
-  .animation_banner_end {
-    transition: opacity 2.5s;
-    opacity: 0;
-  }
-
-  .text_animation_banner {
-    margin-left: 15px;
-  }
 
   .row {
     display: grid;

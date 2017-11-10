@@ -9,10 +9,10 @@
           </router-link>
         </div>
         <div class="section_btn">
-          <button class="btn">
+          <router-link :to="{name: 'RatingPage'}" tag="button" class="btn">
             <i class="fa fa-trophy" aria-hidden="true"></i>
             Рейтинг
-          </button>
+          </router-link>
           <router-link :to="{name: 'Auth', params: {modePage: 'login'}}" tag="button" class="btn">
             <i class="fa fa-user" aria-hidden="true"></i>
             Войти
@@ -67,6 +67,36 @@ export default {
 </script>
 
 <style>
+
+  .animation_banner {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+    height: 6%;
+
+    opacity: 0;
+    color: black;
+    font-size: 23px;
+    z-index: 1;
+    background: rgba(139,197,65, 1);
+  }
+
+  .animation_banner_start {
+    transition: opacity 0.4s, transform ;
+    opacity: 1;
+  }
+
+  .animation_banner_end {
+    transition: opacity 2.5s;
+    opacity: 0;
+  }
+
+  .text_animation_banner {
+    margin-left: 15px;
+  }
 
   @keyframes ripple {
     0% {
