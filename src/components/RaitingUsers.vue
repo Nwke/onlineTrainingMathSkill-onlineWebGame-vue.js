@@ -4,10 +4,10 @@
       <table class="table table-hover">
         <thead>
         <tr>
-          <th scope="col">#</th>
-          <th scope="col">Username</th>
-          <th scope="col">Лучший результат по количеству верных ответов</th>
-          <th scope="col">Уровень сложности</th>
+          <th>#</th>
+          <th>Username</th>
+          <th>Лучший результат по количеству верных ответов</th>
+          <th>Уровень сложности</th>
         </tr>
         </thead>
         <tbody>
@@ -72,7 +72,7 @@
 
 <style scoped>
 
-  .correct-answer {
+  .correct-aswer {
     color: green;
     font-weight: 900;
     font-size: 18px;

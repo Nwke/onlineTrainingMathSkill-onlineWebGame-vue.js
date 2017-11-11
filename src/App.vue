@@ -1,27 +1,27 @@
 <template>
   <div id="app">
     <header class="main-header">
-      <div class="header-content">
-        <div class="section_btn">
-          <router-link :to="{name: 'Lobby'}" tag="button" class="btn" id="backButton">
+      <div class="main-header__content">
+        <section class="content__section-btn">
+          <router-link :to="{name: 'Lobby'}" tag="button" class="btn btn_router" id="backButton">
             <i class="fa fa-reply" aria-hidden="true"></i>
             {{ $store.state.nameControlButton }}
           </router-link>
-        </div>
-        <div class="section_btn">
-          <router-link :to="{name: 'RatingPage'}" tag="button" class="btn">
+        </section>
+        <section class="content__section-btn">
+          <router-link :to="{name: 'RatingPage'}" tag="button" class="btn btn_router">
             <i class="fa fa-trophy" aria-hidden="true"></i>
             Рейтинг
           </router-link>
-          <router-link :to="{name: 'Auth', params: {modePage: 'login'}}" tag="button" class="btn">
+          <router-link :to="{name: 'Auth', params: {modePage: 'login'}}" tag="button" class="btn btn_router">
             <i class="fa fa-user" aria-hidden="true"></i>
             Войти
           </router-link>
-          <router-link :to="{name: 'Auth', params: {modePage: 'registration'}}" tag="button" class="btn">
+          <router-link :to="{name: 'Auth', params: {modePage: 'registration'}}" tag="button" class="btn btn_router">
             <i class="fa fa-user-plus" aria-hidden="true"></i>
              Регистрация
           </router-link>
-        </div>
+        </section>
       </div>
     </header>
 
@@ -68,6 +68,9 @@ export default {
 
 <style>
 
+
+  /* COMPONENT BANNER START */
+
   .animation_banner {
     position: fixed;
     display: flex;
@@ -76,6 +79,7 @@ export default {
 
     width: 100%;
     height: 6%;
+    bottom: 0;
 
     opacity: 0;
     color: black;
@@ -98,6 +102,54 @@ export default {
     margin-left: 15px;
   }
 
+  /* COMPONENT BANNER END */
+
+
+  /* COMPONENT BUTTONS START */
+
+  .btn_def {
+    position: relative;
+
+    width: auto;
+    padding: 3px 7px;
+
+    border: 0;
+    border-radius: 3px;
+    color: white;
+    cursor: pointer;
+    overflow: hidden;
+    font-weight: 600;
+    background: #26a69b;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, .4);
+  }
+
+  .btn_def:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, .5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%);
+    transform-origin: 50% 50%;
+  }
+
+  .btn_def:hover, .btn_def:active, .btn_def:focus {
+    background: #2bbbae;
+  }
+
+  .btn_def:focus:not(:active)::after {
+    animation: ripple 0.8s ease-out;
+  }
+
+  /* COMPONENT BUTTONS END */
+
+
+  /* COMPONENT ANIMATION START*/
+
   @keyframes ripple {
     0% {
       transform: scale(0, 0);
@@ -112,6 +164,53 @@ export default {
       transform: scale(40, 40);
     }
   }
+
+  /* COMPONENT ANIMATION END */
+
+
+  /* COMPONENT CHAT START*/
+
+  .chat__template-message {
+    position: relative;
+    margin: 7px;
+
+    border-radius: 6px;
+    background: #abf0d1;
+  }
+
+  .teamplte-message__time {
+    position: absolute;
+    right: 10px;
+    top:0;
+  }
+
+  .template_message__message {
+    font-size: 13px;
+    font-weight: 400;
+  }
+
+  .message__user {
+    margin-right: 10px;
+    font-size: 20px;
+  }
+
+  .template-message__box-avatar {
+    display: inline-block;
+
+    margin: 5px 10px;
+    margin-right: 5px;
+    padding: 1px;
+
+    border: 1px solid crimson;
+  }
+
+  .template-message__box-avatar img {
+    width: 35px;
+    height: 35px;
+  }
+
+  /* COMPONENT CHAT END*/
+
 
 </style>
 
@@ -138,7 +237,7 @@ export default {
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#606c88', endColorstr='#e33f4c6b',GradientType=0 ); /* IE6-9 */
   }
 
-  .header-content {
+  .main-header__content {
     position: relative;
     display: flex;
     justify-content: space-between;
@@ -147,7 +246,7 @@ export default {
     width: inherit;
   }
 
-  .btn {
+  .btn_router {
     position: relative;
 
     min-width: 150px;
@@ -161,7 +260,7 @@ export default {
     box-shadow: 2px 2px 4px rgba(0, 0, 0, .4);
   }
 
-  .btn:after {
+  .btn_router:after {
     content: '';
     position: absolute;
     top: 50%;
@@ -175,11 +274,11 @@ export default {
     transform-origin: 50% 50%;
   }
 
-  .btn:hover, btn:active, btn:focus {
+  .btn_router:hover, .btn_router:active, .btn_router:focus {
     background: #2bbbae;
   }
 
-  .btn:focus:not(:active)::after {
+  .btn_router:focus:not(:active)::after {
     animation: ripple 0.8s ease-out;
   }
 

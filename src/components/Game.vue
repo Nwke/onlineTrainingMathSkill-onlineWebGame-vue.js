@@ -7,60 +7,77 @@
       </span>
     </div>
     <div class="container">
-      <div class="row">
-        <div class="col-lg-12">
-          <h2 class="text-center">Сведения об игре</h2>
-          <section class="section_about_game">
-            <div class="connect_users">
-              <h3>Подключенные пользователи:</h3>
-              <div class="template_user">Evgen</div>
-              <div class="template_user">Jenya</div>
+      <article class="current-game">
+          <section class="c-g__section_users_chat col-lg-12">
+              <h2 class="text-center">Сведения об игре</h2>
+              <section class="section_about_game">
+                <div>
+                  <h3>Подключенные пользователи и их результат:</h3>
+                  <span class="text-secondary d-block">в реальном времени</span>
+                  <div class="template_user text-danger">Evgen: 5 points</div>
+                  <div class="template_user text-danger">Jenya: 0 points</div>
+                </div>
+                <div class="about_game__chat">
+                  <div class="chat__message-box">
+                    <h3 class="message-box__title text-center">Test0Chat</h3>
+                    <div class="chat__template-message">
+                      <div class="template-message__box-avatar rounded-circle">
+                        <img class="rounded-circle" src="https://thesocietypages.org/socimages/files/2009/05/vimeo.jpg" alt="avatar-user">
+                      </div>
+                      <span class="template_message__message"><span class="message__user text-danger">EVgeny:</span> <span>Hellow may</span> </span>
+                      <span class="teamplte-message__time text-secondary font-italic">23:47:51</span>
+                    </div>
+                  </div>
+                  <form class="chat__footer" @submit.prevent="sendMessage">
+                    <input class="footer__message-field" type="text" placeholder="Сообщение..." v-model="textMessage">
+                    <button class="btn btn_def" type="submit">
+                      Отправить
+                      <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                    </button>
+                  </form>
+                </div>
+              </section>
+            <div class="control_btn_state_game">
+              <button v-if="testingComplete" type="button" id="btn-start" class="btn btn-info btn-block" @click="startTesting">Start</button>
+              <button v-else type="button" id="btn-end" class="btn btn-info btn-block" @click="finishGame">Прервать</button>
             </div>
-            <div class="current_result_users">
-              <h3>Результаты игроков в реальном времени:</h3>
-              <div class="template_user">Evgen: 5 point</div>
-              <div class="template_user">Jenya: 0 point</div>
+            <div class="alert alert-primary" role="alert">
+              Совет: Используйте клавиши клавиатуры,ввод значений осуществляется быстрей.
+              Как только вы начнете играть - ваш фокус будет на вводимом поле,просто нажимайте цифры на клавиаутуре.
+            </div>
+            <hr>
+          </section>
+          <section class="col-lg-12">
+            <div class="output_fields">
+              <div class="output_fields__example">
+                <time>Осталось времени: <span id="outputTime" v-if="!testingComplete"></span></time>
+                <h1 class="display-4">- Пример -</h1>
+              </div>
+              <div v-if="testingComplete">
+                <h4>Результат игры</h4>
+                <h4>Правильных ответов: <span class="text-success">{{countCorrectAnswer}}</span></h4>
+                <table class="table table-sm">
+                  <thead>
+                  <tr>
+                    <th scope="col">Пример:</th>
+                    <th scope="col">Ваш ответ:</th>
+                    <th scope="col">Верный ответ:</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr v-for="result in listResultTest">
+                    <td :class="result.userAnswer === result.Correct ? 'border_green' : 'border_red' ">{{result.Example}}</td>
+                    <td :class="result.userAnswer === result.Correct ? 'border_green' : 'border_red' ">{{result.userAnswer}}</td>
+                    <td :class="result.userAnswer === result.Correct ? 'border_green' : 'border_red' ">{{result.Correct}}</td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </section>
-          <div class="control_btn_state_game">
-            <button v-if="testingComplete" type="button" id="btn-start" class="btn btn-info btn-block" @click="startTesting">Start</button>
-            <button v-else type="button" id="btn-end" class="btn btn-info btn-block" @click="finishGame">Прервать</button>
-          </div>
-          <div class="alert alert-primary" role="alert">
-            Совет: Используйте клавиши клавиатуры,ввод значений осуществляется быстрей.
-            Как только вы начнете играть - ваш фокус будет на вводимом поле,просто нажимайте цифры на клавиаутуре.
-          </div>
-          <hr>
-          <div class="output_fields">
-            <div class="output_example_time">
-              <time class="">Осталось времени: <span id="outputTime" v-if="!testingComplete"></span></time>
-              <h1 class="display-4">- Пример -</h1>
-            </div>
-            <div v-if="testingComplete">
-              <h4>Результат игры</h4>
-               <h4>Правильных ответов: <span class="text_green">{{countCorrectAnswer}}</span></h4>
-              <table class="table table-sm">
-                <thead>
-                <tr>
-                  <th scope="col">Пример:</th>
-                  <th scope="col">Ваш ответ:</th>
-                  <th scope="col">Верный ответ:</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="result in listResultTest">
-                  <td :class="result.userAnswer === result.Correct ? 'border_green' : 'border_red' ">{{result.Example}}</td>
-                  <td :class="result.userAnswer === result.Correct ? 'border_green' : 'border_red' ">{{result.userAnswer}}</td>
-                  <td :class="result.userAnswer === result.Correct ? 'border_green' : 'border_red' ">{{result.Correct}}</td>
-                </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-12 section_game">
+        <section class="c-g__section-game col-lg-12">
           <input v-model="dataCurrentTesting.userAnswer" class="field_answer" type="text" placeholder="Здесь будет отображаться ваш вводимый ответ" @input="processedAnswer">
-          <div class="numbers_field">
+          <div class="section-game__numbers-field">
             <button type="button" class="btn btn-outline-info" @click="addNumber($event.target.value)" value="1">1</button>
             <button type="button" class="btn btn-outline-info" @click="addNumber($event.target.value)" value="2">2</button>
             <button type="button" class="btn btn-outline-info" @click="addNumber($event.target.value)" value="3">3</button>
@@ -76,8 +93,8 @@
             <button type="button" class="btn btn-large btn-danger" @click="sendAnswer">Отправить результат</button>
             <button type="button" class="btn btn-large btn-danger" @click="removeAnswer">Очистить</button>
           </div>
-        </div>
-      </div>
+        </section>
+      </article>
     </div>
   </main>
 </template>
@@ -90,7 +107,10 @@
     name: 'StartGame',
     data () {
       return {
+        socket: null,
+
         textBanner: 'Вы завершили испытание',
+        textMessage: '',
 
         testingComplete: true,
         listResultTest: [],
@@ -111,13 +131,68 @@
       }
     },
     created() {
-      if (!this.$store.state.participantGame) this.$router.push({name: 'Lobby'});
+//      if (!this.$store.state.participantGame) this.$router.push({name: 'Lobby'});
+      this.socket = this.$store.state.socket;
+      this.socket.addEventListener('message', this.getMessageFromServer);
       window.addEventListener('blur', this.lossFocusDuringGame)
     },
     beforeDestroy() {
       this.$store.commit('setParticipantGame', false);
     },
     methods: {
+      sendMessage(e) {
+        this.socket.send(JSON.stringify({
+          type: 'send_message',
+          data: {text: this.textMessage}
+        }));
+        this.textMessage = '';
+      },
+      getMessageFromServer(e) {
+        const messageFromServer = JSON.parse(e.data);
+        switch (messageFromServer.type) {
+          case 'message':
+            this.messageFromServerForChat(e);
+        }
+      },
+      messageFromServerForChat(e) {
+        const messageFromServer = JSON.parse(e.data);
+        console.log(messageFromServer);
+        if (messageFromServer.data.time) {
+          this.addMessageChat(messageFromServer)
+        }
+      },
+      addMessageChat(messageServer) {
+        console.log('sending message');
+        const templateBoxMessage = document.createElement('div');
+        const boxAvatar = document.createElement('div');
+        const avatar = document.createElement('img');
+        const spanFullMessage = document.createElement('span');
+        const spanNameUser = document.createElement('span');
+        const nameUser = messageServer.data.name === null ? 'Anonymous' : messageServer.data.name;
+        const spanTextUser = document.createElement('span');
+        const spanTime = document.createElement('span');
+        const time = this.getCurrentTime();
+
+        templateBoxMessage.classList.add('chat__template-message');
+        boxAvatar.classList.add('template-message__box-avatar', 'rounded-circle');
+        avatar.classList.add('rounded-circle');
+        spanFullMessage.classList.add('template_message__message');
+        spanNameUser.classList.add('message__user', 'text_red');
+        spanTime.classList.add('teamplte-message__time', 'text-secondary', 'font-italic');
+
+        avatar.src = document.querySelector('.info_avatar').src;
+        spanNameUser.innerText = `${nameUser}:`;
+        spanTextUser.innerText = `${messageServer.data.text}`;
+        spanTime.innerText = `${time}`;
+
+        spanFullMessage.appendChild(spanNameUser);
+        spanFullMessage.appendChild(spanTextUser);
+        boxAvatar.appendChild(avatar);
+        templateBoxMessage.appendChild(boxAvatar);
+        templateBoxMessage.appendChild(spanFullMessage);
+        templateBoxMessage.appendChild(spanTime);
+        document.querySelector('.message_chat_box').appendChild(templateBoxMessage);
+      },
       generateExample(min, max) {
         let rand = min - 0.5 + Math.random() * (max - min + 1);
         rand = Math.round(rand);
@@ -246,10 +321,6 @@
     cursor: pointer;
   }
 
-  .text_green {
-    color: green;
-  }
-
   .border_green {
     border: 2px solid green;
   }
@@ -266,11 +337,11 @@
   }
 
 
-  .row {
+  .current-game {
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 2fr 1fr;
-    grid-gap: 30px;
+    grid-template-rows: 0.5fr minmax(1fr, 5fr) 1fr;
+    grid-gap: 20px;
 
     min-height: 550px;
 
@@ -280,6 +351,70 @@
     border: 2px solid black;
 
     background: beige;
+  }
+
+  .section_about_game {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    grid-gap: 20px;
+
+    margin-bottom: 10px;
+  }
+
+  .about_game__chat {
+    position: inherit;
+    display: grid;
+    grid-template-rows: minmax(200px, 225px) 1fr;
+    grid-template-columns: 1fr;
+    grid-gap: 5px;
+
+    padding: 7px;
+
+    border-radius: 5px;
+    box-shadow: 8px 7px 29px -11px #000000;
+    background: rgb(242,246,248); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(242,246,248,1) 0%, rgba(216,225,231,1) 10%, rgba(181,198,208,1) 100%, rgba(224,239,249,1) 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgba(242,246,248,1) 0%,rgba(216,225,231,1) 10%,rgba(181,198,208,1) 100%,rgba(224,239,249,1) 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgba(242,246,248,1) 0%,rgba(216,225,231,1) 10%,rgba(181,198,208,1) 100%,rgba(224,239,249,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f2f6f8', endColorstr='#e0eff9',GradientType=0 ); /* IE6-9 */
+  }
+
+  .chat__message-box {
+    overflow-y: scroll;
+    background: #f3f3f3;
+    box-shadow: inset 0px 0px 10px rgba(0,0,0,0.9);
+  }
+
+  .message-box__title {
+    margin: 5px;
+    margin-bottom: 15px;
+
+    font-weight: 800;
+    font-size: 1.6em;
+    text-align: center;
+
+    color:transparent;
+    background: -webkit-linear-gradient(blue, green);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .chat__footer {
+    display: grid;
+    grid-template-rows: 35px;
+    grid-template-columns: 6fr 2fr;
+    grid-gap: 10px;
+
+  }
+
+  .footer__message-field {
+    border: 1px solid #cccccc;
+    border-radius: 3px;
+    background: #ffffff;
+    font-size: 15px;
+    padding: 5px 10px;
   }
 
 
@@ -299,12 +434,12 @@
     text-align: center;
   }
 
-  .output_example_time {
+  .output_fields__example {
     margin-right: 5px;
     border-right: 1px solid black;
   }
 
-  .section_game {
+  .c-g__section-game {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -318,7 +453,7 @@
     border: 2px solid black;
   }
 
-  .numbers_field {
+  .section-game__numbers-field {
     display: grid;
     grid-template-columns: 15fr 15fr 15fr;
     grid-template-rows: 35px 35px 35px;
@@ -345,15 +480,6 @@
     -webkit-box-shadow: 0px 0px 5px #007eff;
     moz-box-shadow: 0px 0px 5px #007eff;
     box-shadow: 0px 0px 5px #007eff;
-  }
-
-  .section_about_game {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr;
-    grid-gap: 20px;
-
-    margin-bottom: 10px;
   }
 
 </style>
