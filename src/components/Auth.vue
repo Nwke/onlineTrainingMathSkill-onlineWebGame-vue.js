@@ -1,10 +1,10 @@
 <template>
-  <div class="wrap">
+  <main>
     <div class="container">
-      <div class="center">
-        <div class="main-authorization">
-          <h2 class="main-authorization-title text-effect-shadow">{{ $store.state.modePage === 'login' ? 'Sign to MarhV2' : 'Join to MarhV2' }}</h2>
-          <form class="main-authorization-form" @submit.prevent="authorization">
+      <div class="main__section section_center">
+        <div class="section__main-auth wow fadeInDownBig">
+          <h2 class="main-auth__title text-effect-shadow">{{ $store.state.modePage === 'login' ? 'Sign to MarhV2' : 'Join to MarhV2' }}</h2>
+          <form class="main-auth__form" @submit.prevent="authorization">
             <label for="login">Login</label>
             <input type="text" class="margin-bot-md" id="login" v-model="userData.login" required autofocus>
             <label for="password">Password</label>
@@ -20,17 +20,19 @@
             <div class="alert alert-danger margin-bot-lg" role="alert" v-if="errorsAuth">
               {{ messageError }}
             </div>
-            <button type="submit" class="btn_submit margin-top-md">{{ $store.state.modePage === 'login' ? 'Войти на сайт' : 'Зарегистрироваться' }}</button>
+            <button type="submit" class="btn form__btn-submit margin-top-md">{{ $store.state.modePage === 'login' ? 'Войти на сайт' : 'Зарегистрироваться' }}</button>
           </form>
-          <div class="main-authorization-footer margin-bot-lg">
+          <div class="main-auth__footer margin-bot-lg">
             <span>{{ $store.state.modePage === 'login' ? 'New to MarhV2?': 'Registered on MarhV2?'}}</span>
             <a href="#" @click.prevent="getAnotherPage">{{ $store.state.modePage === 'login' ? 'Create a account': 'Sign in account.' }}</a>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </main>
 </template>
+
+
 
 
 <script>
@@ -125,6 +127,26 @@
       }
     }
   }
+
+
+  import WOW from 'wow.js';
+
+  const wow = new WOW(
+    {
+      boxClass:     'wow',      // animated element css class (default is wow)
+      animateClass: 'animated', // animation css class (default is animated)
+      offset:       0,          // distance to the element when triggering the animation (default is 0)
+      mobile:       true,       // trigger animations on mobile devices (default is true)
+      live:         true,       // act on asynchronously loaded content (default is true)
+      callback:     function(box) {
+        // the callback is fired every time an animation is started
+        // the argument that is passed in is the DOM node being animated
+      },
+      scrollContainer: null // optional scroll container selector, otherwise use window
+    }
+  );
+  wow.init();
+
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -157,7 +179,7 @@
   }
 
 
-  .wrap {
+  main {
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 1fr;
@@ -170,7 +192,7 @@
   }
 
 
-  .center {
+  .section_center {
     position: relative;
 
     display: -webkit-box;
@@ -186,11 +208,11 @@
     -ms-flex-pack: center;
   }
 
-  .main-authorization {
+  .section__main-auth {
     width: 30%;
   }
 
-  .main-authorization-form {
+  .main-auth__form {
     position: relative;
 
     padding: 20px;
@@ -201,13 +223,13 @@
     background: #fafbfc;
   }
 
-  .main-authorization-title {
+  .main-auth__title {
     color: darksalmon;
     text-align: center;
   }
 
 
-  .main-authorization-form input {
+  .main-auth__form input {
     min-height: 34px;
     line-height: 34px;
 
@@ -215,14 +237,14 @@
     border: 1px solid #d1d5da;
     border-radius: 3px;
   }
-  .main-authorization-form label {
+  .main-auth__form label {
     margin-bottom: 3px;
   }
-  .main-authorization-form label, .main-authorization-form input {
+  .main-auth__form label, .main-auth__form input {
     display: block;
     width: 100%;
   }
-  .main-authorization-form .secondary-controls {
+  .main-auth__form .secondary-controls {
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -238,7 +260,7 @@
 
 
 
-  .main-authorization-footer {
+  .main-auth__footer {
     display: -webkit-box;
     display: -ms-flexbox;
     display: flex;
@@ -253,7 +275,7 @@
     background: #f9f9f9;
   }
 
-  .btn_submit {
+  .form__btn-submit {
     position: relative;
 
     width: 100%;
@@ -268,7 +290,7 @@
     box-shadow: 2px 2px 4px rgba(0, 0, 0, .4);
   }
 
-  .btn_submit:after {
+  .form__btn-submit:after {
     content: '';
     position: absolute;
     top: 50%;
@@ -282,11 +304,11 @@
     transform-origin: 50% 50%;
   }
 
-  .btn_submit:hover, btn_submit:active, btn_submit:focus {
+  .form__btn-submit:hover, form__btn-submit:active, form__btn-submit:focus {
     background: #2bbbae;
   }
 
-  .btn_submit:focus:not(:active)::after {
+  .form__btn-submit:focus:not(:active)::after {
     animation: ripple 0.8s ease-out;
   }
 

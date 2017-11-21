@@ -45,7 +45,7 @@ export default {
   },
   watch: {
     '$route': function () {
-      const arrayDisabledButtons = document.querySelectorAll('.section_btn')[1].querySelectorAll('button');
+      const arrayDisabledButtons = document.querySelectorAll('.content__section-btn')[1].querySelectorAll('button');
       if (this.$router.currentRoute.name === 'Game') {
         this.$store.commit('setNameControlButton', 'Покинуть текущую игру');
         arrayDisabledButtons.forEach(elem => elem.disabled = true);
@@ -68,7 +68,6 @@ export default {
 
 <style>
 
-
   /* COMPONENT BANNER START */
 
   .animation_banner {
@@ -81,21 +80,14 @@ export default {
     height: 6%;
     bottom: 0;
 
-    opacity: 0;
     color: black;
     font-size: 23px;
     z-index: 1;
     background: rgba(139,197,65, 1);
   }
 
-  .animation_banner_start {
-    transition: opacity 0.4s, transform ;
-    opacity: 1;
-  }
-
-  .animation_banner_end {
-    transition: opacity 2.5s;
-    opacity: 0;
+  .animation_banner__hidden {
+   opacity: 0;
   }
 
   .text_animation_banner {
@@ -168,48 +160,6 @@ export default {
   /* COMPONENT ANIMATION END */
 
 
-  /* COMPONENT CHAT START*/
-
-  .chat__template-message {
-    position: relative;
-    margin: 7px;
-
-    border-radius: 6px;
-    background: #abf0d1;
-  }
-
-  .teamplte-message__time {
-    position: absolute;
-    right: 10px;
-    top:0;
-  }
-
-  .template_message__message {
-    font-size: 13px;
-    font-weight: 400;
-  }
-
-  .message__user {
-    margin-right: 10px;
-    font-size: 20px;
-  }
-
-  .template-message__box-avatar {
-    display: inline-block;
-
-    margin: 5px 10px;
-    margin-right: 5px;
-    padding: 1px;
-
-    border: 1px solid crimson;
-  }
-
-  .template-message__box-avatar img {
-    width: 35px;
-    height: 35px;
-  }
-
-  /* COMPONENT CHAT END*/
 
 
 </style>

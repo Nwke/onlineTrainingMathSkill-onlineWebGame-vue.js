@@ -6,6 +6,12 @@ import router from './router';
 import store from './store/';
 import * as firebase from 'firebase';
 
+import Chat from '@/components/small-comp/dir-chat.vue'
+import CardUser from '@/components/small-comp/dir-user-card.vue'
+
+Vue.component('dir-chat', Chat);
+Vue.component('dir-user-card', CardUser);
+
 firebase.initializeApp({
   apiKey: "AIzaSyCcI4kBCa8LTxpDiS8YeKp12uAcuk9sjZ8",
   authDomain: "mental-7912c.firebaseapp.com",

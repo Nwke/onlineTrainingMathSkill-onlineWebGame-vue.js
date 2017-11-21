@@ -1,6 +1,6 @@
 <template>
   <main @keyup.13="sendAnswer">
-    <div class="animation_banner">
+    <div class="animation_banner animation_banner__hidden">
       <i class="fa fa-bell" aria-hidden="false"></i>
       <span class="text_animation_banner">
           {{ textBanner }}
@@ -9,38 +9,23 @@
     <div class="container">
       <article class="current-game">
           <section class="c-g__section_users_chat col-lg-12">
-              <h2 class="text-center">Сведения об игре</h2>
-              <section class="section_about_game">
-                <div>
-                  <h3>Подключенные пользователи и их результат:</h3>
-                  <span class="text-secondary d-block">в реальном времени</span>
-                  <div class="template_user text-danger">Evgen: 5 points</div>
-                  <div class="template_user text-danger">Jenya: 0 points</div>
-                </div>
-                <div class="about_game__chat">
-                  <div class="chat__message-box">
-                    <h3 class="message-box__title text-center">Test0Chat</h3>
-                    <div class="chat__template-message">
-                      <div class="template-message__box-avatar rounded-circle">
-                        <img class="rounded-circle" src="https://thesocietypages.org/socimages/files/2009/05/vimeo.jpg" alt="avatar-user">
-                      </div>
-                      <span class="template_message__message"><span class="message__user text-danger">EVgeny:</span> <span>Hellow may</span> </span>
-                      <span class="teamplte-message__time text-secondary font-italic">23:47:51</span>
-                    </div>
+              <h2 class="text-center mb-3">Сведения об игре</h2>
+              <section class="section-about-game">
+                <div class="about-game__state-game">
+                  <h3 class="about-game__title">Подключенные пользователи и их результат:</h3>
+                  <div class="template-user text-danger">Evgen: <span class="text-success"> 5 points</span> <span class="text-secondary">(lider lobby)</span> </div>
+                  <div class="template-user text-danger">Jenya: <span class="text-success">3 points</span></div>
+                  <span class="text-secondary d-block">Всё происходит в реальном времени</span>
+                  <div v-if="rightStartGame" class="control_btn_state_game">
+                    <button class="btn btn_def btn_size" v-if="testingComplete" type="button" id="btn-start" @click="startTesting">Начать игру</button>
+                    <button class="btn btn_def btn_size" v-else type="button" id="btn-end" @click="finishGame">Прервать</button>
                   </div>
-                  <form class="chat__footer" @submit.prevent="sendMessage">
-                    <input class="footer__message-field" type="text" placeholder="Сообщение..." v-model="textMessage">
-                    <button class="btn btn_def" type="submit">
-                      Отправить
-                      <i class="fa fa-paper-plane" aria-hidden="true"></i>
-                    </button>
-                  </form>
+                  <div v-else-if="testingComplete & !rightStartGame" class="alert alert-success control_btn_state_game" role="alert">
+                    Ожидайте,когда лидер лобби начнёт игру!
+                  </div>
                 </div>
+                <dir-chat></dir-chat>
               </section>
-            <div class="control_btn_state_game">
-              <button v-if="testingComplete" type="button" id="btn-start" class="btn btn-info btn-block" @click="startTesting">Start</button>
-              <button v-else type="button" id="btn-end" class="btn btn-info btn-block" @click="finishGame">Прервать</button>
-            </div>
             <div class="alert alert-primary" role="alert">
               Совет: Используйте клавиши клавиатуры,ввод значений осуществляется быстрей.
               Как только вы начнете играть - ваш фокус будет на вводимом поле,просто нажимайте цифры на клавиаутуре.
@@ -108,9 +93,9 @@
     data () {
       return {
         socket: null,
+        rightStartGame: false,
 
         textBanner: 'Вы завершили испытание',
-        textMessage: '',
 
         testingComplete: true,
         listResultTest: [],
@@ -133,66 +118,12 @@
     created() {
 //      if (!this.$store.state.participantGame) this.$router.push({name: 'Lobby'});
       this.socket = this.$store.state.socket;
-      this.socket.addEventListener('message', this.getMessageFromServer);
       window.addEventListener('blur', this.lossFocusDuringGame)
     },
     beforeDestroy() {
       this.$store.commit('setParticipantGame', false);
     },
     methods: {
-      sendMessage(e) {
-        this.socket.send(JSON.stringify({
-          type: 'send_message',
-          data: {text: this.textMessage}
-        }));
-        this.textMessage = '';
-      },
-      getMessageFromServer(e) {
-        const messageFromServer = JSON.parse(e.data);
-        switch (messageFromServer.type) {
-          case 'message':
-            this.messageFromServerForChat(e);
-        }
-      },
-      messageFromServerForChat(e) {
-        const messageFromServer = JSON.parse(e.data);
-        console.log(messageFromServer);
-        if (messageFromServer.data.time) {
-          this.addMessageChat(messageFromServer)
-        }
-      },
-      addMessageChat(messageServer) {
-        console.log('sending message');
-        const templateBoxMessage = document.createElement('div');
-        const boxAvatar = document.createElement('div');
-        const avatar = document.createElement('img');
-        const spanFullMessage = document.createElement('span');
-        const spanNameUser = document.createElement('span');
-        const nameUser = messageServer.data.name === null ? 'Anonymous' : messageServer.data.name;
-        const spanTextUser = document.createElement('span');
-        const spanTime = document.createElement('span');
-        const time = this.getCurrentTime();
-
-        templateBoxMessage.classList.add('chat__template-message');
-        boxAvatar.classList.add('template-message__box-avatar', 'rounded-circle');
-        avatar.classList.add('rounded-circle');
-        spanFullMessage.classList.add('template_message__message');
-        spanNameUser.classList.add('message__user', 'text_red');
-        spanTime.classList.add('teamplte-message__time', 'text-secondary', 'font-italic');
-
-        avatar.src = document.querySelector('.info_avatar').src;
-        spanNameUser.innerText = `${nameUser}:`;
-        spanTextUser.innerText = `${messageServer.data.text}`;
-        spanTime.innerText = `${time}`;
-
-        spanFullMessage.appendChild(spanNameUser);
-        spanFullMessage.appendChild(spanTextUser);
-        boxAvatar.appendChild(avatar);
-        templateBoxMessage.appendChild(boxAvatar);
-        templateBoxMessage.appendChild(spanFullMessage);
-        templateBoxMessage.appendChild(spanTime);
-        document.querySelector('.message_chat_box').appendChild(templateBoxMessage);
-      },
       generateExample(min, max) {
         let rand = min - 0.5 + Math.random() * (max - min + 1);
         rand = Math.round(rand);
@@ -317,9 +248,6 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
-  .btn {
-    cursor: pointer;
-  }
 
   .border_green {
     border: 2px solid green;
@@ -353,77 +281,46 @@
     background: beige;
   }
 
-  .section_about_game {
+  .section-about-game {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1.2fr;
     grid-template-rows: 1fr;
-    grid-gap: 20px;
+    grid-gap: 90px;
 
     margin-bottom: 10px;
   }
 
-  .about_game__chat {
-    position: inherit;
-    display: grid;
-    grid-template-rows: minmax(200px, 225px) 1fr;
-    grid-template-columns: 1fr;
-    grid-gap: 5px;
-
-    padding: 7px;
-
-    border-radius: 5px;
-    box-shadow: 8px 7px 29px -11px #000000;
-    background: rgb(242,246,248); /* Old browsers */
-    background: -moz-linear-gradient(top, rgba(242,246,248,1) 0%, rgba(216,225,231,1) 10%, rgba(181,198,208,1) 100%, rgba(224,239,249,1) 100%); /* FF3.6-15 */
-    background: -webkit-linear-gradient(top, rgba(242,246,248,1) 0%,rgba(216,225,231,1) 10%,rgba(181,198,208,1) 100%,rgba(224,239,249,1) 100%); /* Chrome10-25,Safari5.1-6 */
-    background: linear-gradient(to bottom, rgba(242,246,248,1) 0%,rgba(216,225,231,1) 10%,rgba(181,198,208,1) 100%,rgba(224,239,249,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f2f6f8', endColorstr='#e0eff9',GradientType=0 ); /* IE6-9 */
-  }
-
-  .chat__message-box {
-    overflow-y: scroll;
-    background: #f3f3f3;
-    box-shadow: inset 0px 0px 10px rgba(0,0,0,0.9);
-  }
-
-  .message-box__title {
-    margin: 5px;
-    margin-bottom: 15px;
-
-    font-weight: 800;
-    font-size: 1.6em;
-    text-align: center;
-
-    color:transparent;
-    background: -webkit-linear-gradient(blue, green);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .chat__footer {
-    display: grid;
-    grid-template-rows: 35px;
-    grid-template-columns: 6fr 2fr;
-    grid-gap: 10px;
+  .about-game__state-game {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 
   }
 
-  .footer__message-field {
-    border: 1px solid #cccccc;
-    border-radius: 3px;
-    background: #ffffff;
-    font-size: 15px;
-    padding: 5px 10px;
+  .about-game__title {
+    font-size: 24px;
   }
 
+  .template-user {
+    margin-left: 5px;
+    font-weight: 600;
+    font-size: 20px;
+  }
+
+  .btn_size {
+    width: 80%;
+    min-height: 35px;
+  }
 
   .control_btn_state_game {
     display: flex;
     justify-content: center;
 
-    width: 30%;
+
     margin-bottom: 10px;
+    margin-top: auto;
+
     text-align: center;
   }
 
