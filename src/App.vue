@@ -32,6 +32,9 @@
 </template>
 
 <script>
+
+import WOW from 'wow.js';
+
 export default {
   name: 'app',
   data() {
@@ -42,6 +45,27 @@ export default {
   created() {
     this.socket = new WebSocket('ws://test0chat.ddns.net:8000');
     this.$store.commit('setConnectFromServer', this.socket);
+    const wow = new WOW();
+    wow.init();
+  },
+  methods: {
+    createContainerAnimation(typeAnimation) {
+      const animContainer = document.createElement('div');
+      const icon = document.createElement('i');
+      const span = document.createElement('span');
+      const text = this.$store.state.animated.textBanner;
+      animContainer.classList.add('animation_banner', 'animated', `${typeAnimation}`);
+      icon.classList.add('fa', 'fa-bell');
+      span.classList.add('text_animation_banner');
+
+      icon.setAttribute('aria-hidden', 'false');
+      span.innerText = text;
+
+      animContainer.appendChild(icon);
+      animContainer.appendChild(span);
+
+      return animContainer
+    }
   },
   watch: {
     '$route': function () {
@@ -56,10 +80,24 @@ export default {
     },
     '$store.state.gameStarted': function () {
       let btnBack = document.querySelector('#backButton');
-      if (this.$store.state.gameStarted) {
-        btnBack.disabled = true;
-      } else {
-        btnBack.disabled = false;
+      btnBack.disabled = !!this.$store.state.gameStarted;
+    },
+    '$store.state.animated.run': function () {
+      // need fix style code
+      if (this.$store.state.animated.run) {
+        const animStartContainer = this.createContainerAnimation('flipInX');
+
+        document.querySelector('.main-header__content').appendChild(animStartContainer);
+
+        setTimeout(() => {
+          document.querySelector('.animation_banner').remove();
+          const animEndContainer = this.createContainerAnimation('flipOutX');
+          document.querySelector('.main-header__content').appendChild(animEndContainer);
+          setTimeout(() => {
+            document.querySelector('.animation_banner').remove();
+            this.$store.commit('setAnimation', {run: false, textBanner: ''})
+          }, 3000)
+        }, 3000)
       }
     }
   }
@@ -77,8 +115,10 @@ export default {
     align-items: center;
 
     width: 100%;
-    height: 6%;
-    bottom: 0;
+    height: 8%;
+    top: 0;
+    left: 0;
+    animation-duration: 3s;
 
     color: black;
     font-size: 23px;
@@ -86,9 +126,6 @@ export default {
     background: rgba(139,197,65, 1);
   }
 
-  .animation_banner__hidden {
-   opacity: 0;
-  }
 
   .text_animation_banner {
     margin-left: 15px;
@@ -142,22 +179,6 @@ export default {
 
   /* COMPONENT ANIMATION START*/
 
-  @keyframes ripple {
-    0% {
-      transform: scale(0, 0);
-      opacity: 1;
-    }
-    20% {
-      transform: scale(25, 25);
-      opacity: 1;
-    }
-    100% {
-      opacity: 0;
-      transform: scale(40, 40);
-    }
-  }
-
-  /* COMPONENT ANIMATION END */
 
 
 

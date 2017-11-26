@@ -1,18 +1,12 @@
 <template>
   <div class="wrapper_page">
     <main>
-      <div class="animation_banner animation_banner__hidden">
-        <i class="fa fa-bell" aria-hidden="false"></i>
-        <span class="text_animation_banner">
-          {{ textBanner }}
-      </span>
-      </div>
       <article class="wrapper_sections">
         <dir-chat></dir-chat>
         <dir-user-card></dir-user-card>
       </article>
 
-      <article class="block-game wow fadeInUpBig">
+      <article class="block-game wow bounceIn">
         <section class="block-game__section-settings">
           <h2 class="text-center">Настройки игры</h2>
           <fieldset>
@@ -102,6 +96,7 @@
 
 
 <script>
+
   export default {
     name: 'Lobby',
     data() {
@@ -129,7 +124,7 @@
       },
       createGame(e) {
         e.preventDefault();
-        // if (!this.$store.state.userData.loginSuccess) return this.callAnimationBanner();
+        if (!this.$store.state.userData.loginSuccess) return this.callAnimationBanner();
         const nickUserCreated = this.$store.state.userData.login;
         const nameGame = this.dataGame.titleCustomGame;
         const lvlGame = this.dataGame.lvlGame;
@@ -145,7 +140,7 @@
         console.log(this.listGames);
       },
       connectToGame(e) {
-//        if (!this.$store.state.userData.loginSuccess) return this.callAnimationBanner();
+        if (!this.$store.state.userData.loginSuccess) return this.callAnimationBanner();
         this.$store.commit('setParticipantGame', true);
         this.$router.push({name: 'Game', params: {nameGame: `${e.currentTarget.dataset.nameGame}`}})
       },
@@ -157,39 +152,13 @@
         return `${hours}:${minutes}:${seconds}`;
       },
       callAnimationBanner() {
-        // Анимация не работает
-        setTimeout(() => {
-          document.querySelector('.animation_banner').classList.remove('animation_banner__hidden');
-          document.querySelector('.animation_banner').classList.add('wow', 'rotateInDownLeft');
-        }, 100);
-        setTimeout(() => {
-          document.querySelector('.animation_banner').classList.remove('rotateInDownLeft');
-          document.querySelector('.animation_banner').classList.add('rotateOutUpLeft');
-        }, 4000);
-        setTimeout(() => {
-          document.querySelector('.animation_banner').classList.remove('wow', 'rotateOutUpLeft');
-          document.querySelector('.animation_banner').classList.add('animation_banner__hidden');
-        }, 7000);
+        this.$store.commit('setAnimation', {
+          run: true,
+          textBanner: this.textBanner
+        });
       }
     }
   }
-
-  import WOW from 'wow.js';
-
-  const wow = new WOW(
-    {
-      boxClass:     'wow',      // animated element css class (default is wow)
-      animateClass: 'animated', // animation css class (default is animated)
-      offset:       0,          // distance to the element when triggering the animation (default is 0)
-      mobile:       true,       // trigger animations on mobile devices (default is true)
-      live:         true,       // act on asynchronously loaded content (default is true)
-      callback:     function(box) {
-        console.log(34);
-      },
-      scrollContainer: null // optional scroll container selector, otherwise use window
-    }
-  );
-  wow.init();
 
 </script>
 

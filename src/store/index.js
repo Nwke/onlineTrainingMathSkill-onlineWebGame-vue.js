@@ -10,7 +10,6 @@ export default new Vuex.Store({
 
     nameControlButton: 'Лобби',
 
-
     userData: {
       loginSuccess: false,
       login: 'Anonymous',
@@ -20,7 +19,12 @@ export default new Vuex.Store({
     rightStartGame: false,
     participantGame: false,
 
-    gameStarted: false
+    gameStarted: false,
+
+    animated: {
+      run: false,
+      textBanner: ''
+    }
   },
   mutations: {
     setModePage(state, strValue) {
@@ -40,6 +44,9 @@ export default new Vuex.Store({
     },
     setNameControlButton(state, strValue) {
       state.nameControlButton = strValue;
+    },
+    setAnimation(state, obj) {
+      state.animated = obj;
     }
   }
 })
