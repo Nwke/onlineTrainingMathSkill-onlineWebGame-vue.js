@@ -2,7 +2,7 @@
   <section class="section__user-card wow fadeInRight">
     <h3 class="user-card__title"><i class="fa fa-id-card" aria-hidden="true"></i> Карточка пользователя</h3>
     <div class="user-card__avatar-box">
-      <img class="avatar-box__img" src="https://thesocietypages.org/socimages/files/2009/05/vimeo.jpg" alt="avatar-user">
+      <img class="avatar-box__img" :src="$store.state.userData.avatar" alt="avatar-user">
     </div>
     <span class="user-card__template-info">Ваш ник: <span class="text-success"> {{ $store.state.userData.login}} </span></span>
     <span class="user-card__template-info">Статус: <span class="text-success">Online</span></span>
@@ -11,6 +11,13 @@
     <label>Сменить аватар:
       <input type="file" value="Сменить аватар" accept="image/*" @change="avatarLoaded">
     </label>
+    <button class="btn btn_def"
+            @click="logOut">
+      <span>Выйти с аккаунта</span>
+      <i class="fa fa-arrow-alt-square-right"></i>
+    </button>
+
+
   </section>
 </template>
 
@@ -29,10 +36,26 @@
 
     methods: {
       avatarLoaded(e) {
-        const files  = Array.from(e.currentTarget.files);
-        const fileAvatar = files[0];
-        document.querySelector('.avatar-box__img').src = URL.createObjectURL(fileAvatar);
+        this.getImgFileWithReader(e)
+        .then((img) => {
+          this.$store.commit('setAvatar', img);
+        });
+
       },
+      logOut() {
+        this.$store.commit('setDefaultUser');
+      },
+      getImgFileWithReader(e) {
+        return new Promise((done) => {
+          const fileImg = e.target.files[0];
+          const reader  = new FileReader();
+
+          reader.onloadend = function () {
+            done(reader.result)
+          };
+          if (fileImg) reader.readAsDataURL(fileImg);
+        })
+      }
     }
   }
 

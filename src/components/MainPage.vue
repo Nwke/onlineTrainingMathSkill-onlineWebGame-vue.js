@@ -53,7 +53,11 @@
               </tr>
               </tbody>
             </table>
-            <button title="Только для авторизованных пользователей" type="button" class="btn btn_def template-game__btn-connect" :data-uid-game="game.uidGame" :data-name-game="game.nameGame" @click="connectToGame">
+            <button title="Только для авторизованных пользователей"
+                    type="button" class="btn btn_def template-game__btn-connect"
+                    :data-uid-game="game.uidGame"
+                    :data-name-game="game.nameGame"
+                    @click="connectToGame">
               <i class="fa fa-users" aria-hidden="true"></i>
               <span>Присоединиться</span>
             </button>
@@ -117,8 +121,29 @@
     },
     created() {
       this.socket = this.$store.state.socket;
+      this.socket.addEventListener('open', this.rememberUserData);
     },
     methods: {
+      rememberUserData() {
+        this.socket.removeEventListener('open', this.rememberUserData);
+        if (localStorage.getItem('userDataForLogin')) {
+          this.socket.addEventListener('message', this.getResponseFromServerWithAuth);
+          this.socket.send(JSON.stringify(JSON.parse(localStorage.getItem('userDataForLogin'))));
+        }
+      },
+      getResponseFromServerWithAuth(e) {
+        const response = JSON.parse(e.data);
+        if (response.type !== 'auth_error') {
+          const userData = {
+            loginSuccess: true,
+            login: JSON.parse(localStorage.getItem('userDataForLogin')).data.user,
+            avatar: 'https://thesocietypages.org/socimages/files/2009/05/vimeo.jpg',
+            raiting: 0
+          };
+          this.$store.commit('setUserData', userData);
+        }
+        this.socket.removeEventListener('message', this.getResponseFromServerWithAuth);
+      },
       validateNameCustomGame() {
         this.dataGame.titleCustomGame = this.dataGame.titleCustomGame.replace(/\W+/gi, '');
       },
@@ -129,7 +154,6 @@
         const nameGame = this.dataGame.titleCustomGame;
         const lvlGame = this.dataGame.lvlGame;
         const uidGame = parseInt(new Date().getTime()/1000);
-        console.log(nickUserCreated, nameGame, lvlGame, uidGame);
         this.listGames.push({
           nickUserCreated,
           nameGame,
@@ -137,7 +161,6 @@
           uidGame,
           countPlayers: 1
         });
-        console.log(this.listGames);
       },
       connectToGame(e) {
         if (!this.$store.state.userData.loginSuccess) return this.callAnimationBanner();

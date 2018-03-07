@@ -8,11 +8,12 @@ export default new Vuex.Store({
     modePage: '',
     socket: null,
 
-    nameControlButton: 'Лобби',
+    nameControlButton: 'Главная',
 
     userData: {
       loginSuccess: false,
       login: 'Anonymous',
+      avatar: 'https://thesocietypages.org/socimages/files/2009/05/vimeo.jpg',
       raiting: 0
     },
 
@@ -27,6 +28,14 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    setDefaultUser(state) {
+      state.userData = {
+        loginSuccess: false,
+        login: 'Anonymous',
+        avatar: 'https://thesocietypages.org/socimages/files/2009/05/vimeo.jpg',
+        raiting: 0
+      };
+    },
     setModePage(state, strValue) {
       state.modePage = strValue;
     },
@@ -47,6 +56,9 @@ export default new Vuex.Store({
     },
     setAnimation(state, obj) {
       state.animated = obj;
+    },
+    setAvatar(state, base64Img) {
+      state.userData.avatar = base64Img;
     }
   }
 })

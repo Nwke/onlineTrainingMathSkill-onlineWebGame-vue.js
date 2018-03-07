@@ -9,13 +9,6 @@
             <input type="text" class="margin-bot-md" id="login" v-model="userData.login" required autofocus>
             <label for="password">Password</label>
             <input type="password" class="margin-bot-md" id="password" v-model="userData.pass" required>
-            <div v-if="$store.state.modePage === 'login'">
-              <label class="custom-control custom-checkbox">
-                <input v-model="restoreDataLogin" type="checkbox" class="custom-control-input" checked>
-                <span class="custom-control-indicator"></span>
-                <span class="custom-control-description">Оставаться в системе</span>
-              </label>
-            </div>
 
             <div class="alert alert-danger margin-bot-lg" role="alert" v-if="errorsAuth">
               {{ messageError }}
@@ -50,14 +43,12 @@
           pass: '',
         },
 
-        restoreDataLogin: false,
         messageError: '',
         errorsAuth: false,
       }
     },
     created () {
       this.setModePage();
-      this.recallLoginData();
       this.socket = this.$store.state.socket;
     },
     watch: {
@@ -84,19 +75,14 @@
       authorization() {
         const requestType = this.modePage === 'registration' ? 'reg' : 'auth';
 
-        if (this.userData.login.length > 3 && this.userData.pass.length > 3) {
-          this.socket.send(JSON.stringify({
-            type: requestType,
-            data: {
-              'user': this.userData.login,
-              'password': this.userData.pass
-            }
-          }));
-          this.socket.addEventListener('message', this.getResponseFromServerWithAuth);
-        } else {
-          this.messageError = 'Проверьте веденные данные по следующим критерям: Пароль и логин длиннее 3 символов.';
-          this.errorsAuth = true;
-        }
+        this.socket.send(JSON.stringify({
+          type: requestType,
+          data: {
+            'user': this.userData.login,
+            'password': this.userData.pass
+          }
+        }));
+        this.socket.addEventListener('message', this.getResponseFromServerWithAuth);
       },
       getResponseFromServerWithAuth(e) {
         const response = JSON.parse(e.data);
@@ -105,26 +91,24 @@
           this.errorsAuth = true;
         } else {
           this.$router.push({name: 'Lobby'});
-          this.$store.commit('setUserData', {
+          const userData = {
             loginSuccess: true,
             login: this.userData.login,
+            avatar: 'https://thesocietypages.org/socimages/files/2009/05/vimeo.jpg',
             raiting: 0
-          });
+          };
+          this.$store.commit('setUserData', userData);
+          localStorage.setItem('userDataForLogin', JSON.stringify({
+            type: 'auth',
+            data: {
+              'user': this.userData.login,
+              'password': this.userData.pass
+            }
+          }));
           this.errorsAuth = false;
-          if (this.restoreDataLogin) this.rememberLoginData(response);
         }
         this.socket.removeEventListener('message', this.getResponseFromServerWithAuth);
       },
-      rememberLoginData(data) {
-        console.log(data);
-      },
-      recallLoginData() {
-        if (localStorage.login && localStorage.pass) {
-          this.userData.login = localStorage.login;
-          this.userData.pass = localStorage.pass;
-          this.restoreDataLogin = true;
-        }
-      }
     }
   }
 

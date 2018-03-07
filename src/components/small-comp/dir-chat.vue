@@ -2,12 +2,12 @@
   <section class="chat wow slideInLeft">
     <div class="chat__message-box">
       <h3 class="message-box__title text-center">Test0Chat</h3>
-      <div class="chat__template-message">
+      <div class="chat__template-message hidden">
         <div class="template-message__box-avatar rounded-circle">
           <img class="avatar-box__img rounded-circle" src="https://thesocietypages.org/socimages/files/2009/05/vimeo.jpg" alt="avatar-user">
         </div>
-        <span class="template_message__message"><span class="message__user text-danger">EVgeny:</span> <span>Hellow may</span> </span>
-        <span class="teamplte-message__time text-secondary font-italic">23:47:51</span>
+        <span class="template_message__message"><span class="message__user text-danger">EVgeny:</span> <span class="message_text">Hellow may</span> </span>
+        <span class="template-message__time text-secondary font-italic">23:47:51</span>
       </div>
     </div>
     <form class="chat__footer" @submit.prevent="sendMessage">
@@ -49,49 +49,36 @@
       },
       messageFromServerForChat(e) {
         const messageFromServer = JSON.parse(e.data);
-        console.log(messageFromServer);
-        if (messageFromServer.data.time) {
+        if (messageFromServer.data.time && messageFromServer.data.text) {
           this.addMessageChat(messageFromServer)
         }
       },
-      sendMessage(e) {
+      sendMessage() {
         this.socket.send(JSON.stringify({
           type: 'send_message',
           data: {text: this.textMessage}
         }));
         this.textMessage = '';
+        console.log('sending message');
       },
       addMessageChat(messageServer) {
-        console.log('sending message');
-        const templateBoxMessage = document.createElement('div');
-        const boxAvatar = document.createElement('div');
-        const avatar = document.createElement('img');
-        const spanFullMessage = document.createElement('span');
-        const spanNameUser = document.createElement('span');
-        const nameUser = messageServer.data.name === null ? 'Anonymous' : messageServer.data.name;
-        const spanTextUser = document.createElement('span');
-        const spanTime = document.createElement('span');
+        const messageUserTemplate = document.querySelector('.chat__template-message').cloneNode(true);
         const time = this.getCurrentTime();
+        messageUserTemplate.classList.remove('hidden'); // tag template now work
+        messageUserTemplate.querySelector('.message__user').innerText = messageServer.data.name === null
+          ? 'Anonymous'
+          : messageServer.data.name;
+        messageUserTemplate.querySelector('.message_text').innerText = `${messageServer.data.text}`;
+        messageUserTemplate.querySelector('.template-message__time').innerText = `${time}`;
 
-        templateBoxMessage.classList.add('chat__template-message');
-        boxAvatar.classList.add('template-message__box-avatar', 'rounded-circle');
-        avatar.classList.add('rounded-circle');
-        spanFullMessage.classList.add('template_message__message');
-        spanNameUser.classList.add('message__user', 'text_red');
-        spanTime.classList.add('teamplte-message__time', 'text-secondary', 'font-italic');
-
-        avatar.src = document.querySelector('.avatar-box__img').src;
-        spanNameUser.innerText = `${nameUser}:`;
-        spanTextUser.innerText = `${messageServer.data.text}`;
-        spanTime.innerText = `${time}`;
-
-        spanFullMessage.appendChild(spanNameUser);
-        spanFullMessage.appendChild(spanTextUser);
-        boxAvatar.appendChild(avatar);
-        templateBoxMessage.appendChild(boxAvatar);
-        templateBoxMessage.appendChild(spanFullMessage);
-        templateBoxMessage.appendChild(spanTime);
-        document.querySelector('.message_chat_box').appendChild(templateBoxMessage);
+        document.querySelector('.chat__message-box').appendChild(messageUserTemplate);
+      },
+      getCurrentTime() {
+        const date = new Date();
+        const hours = date.getHours();
+        const minutes = date.getMinutes() > 9 ? date.getMinutes() : `0${date.getMinutes()}`;
+        const seconds = date.getSeconds() > 9 ? date.getSeconds() : `0${date.getSeconds()}`;
+        return `${hours}:${minutes}:${seconds}`;
       }
     }
   }
@@ -148,7 +135,7 @@
     background: #abf0d1;
   }
 
-  .teamplte-message__time {
+  .template-message__time {
     position: absolute;
     right: 10px;
     top:0;
@@ -192,6 +179,10 @@
     background: #ffffff;
     font-size: 15px;
     padding: 5px 10px;
+  }
+
+  .hidden {
+    display: none;
   }
 
 </style>

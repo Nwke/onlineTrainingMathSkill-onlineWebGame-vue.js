@@ -43,7 +43,7 @@ export default {
     }
   },
   created() {
-    this.socket = new WebSocket('ws://test0chat.ddns.net:8000');
+    this.socket = new WebSocket('ws://194.58.108.153:8080');
     this.$store.commit('setConnectFromServer', this.socket);
     const wow = new WOW();
     wow.init();
