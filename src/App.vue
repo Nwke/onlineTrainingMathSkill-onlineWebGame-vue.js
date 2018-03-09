@@ -69,21 +69,22 @@ export default {
   },
   watch: {
     '$route': function () {
-      const arrayDisabledButtons = document.querySelectorAll('.content__section-btn')[1].querySelectorAll('button');
+      // bad logics name button
+      const arrayTopMenuButtons = document.querySelectorAll('.content__section-btn')[1].querySelectorAll('button');
       if (this.$router.currentRoute.name === 'Game') {
         this.$store.commit('setNameControlButton', 'Покинуть текущую игру');
-        arrayDisabledButtons.forEach(elem => elem.disabled = true);
+        arrayTopMenuButtons.forEach(elem => elem.disabled = true);
       } else {
         this.$store.commit('setNameControlButton', 'Лобби');
-        arrayDisabledButtons.forEach(elem => elem.disabled = false);
+        arrayTopMenuButtons.forEach(elem => elem.disabled = false);
       }
     },
     '$store.state.gameStarted': function () {
       let btnBack = document.querySelector('#backButton');
-      btnBack.disabled = !!this.$store.state.gameStarted;
+      btnBack.disabled = this.$store.state.gameStarted;
     },
     '$store.state.animated.run': function () {
-      // need fix style code
+      // NEED FIX CODE
       if (this.$store.state.animated.run) {
         const animStartContainer = this.createContainerAnimation('flipInX');
 

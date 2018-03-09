@@ -49,7 +49,7 @@
                 <td>{{ game.nameGame }}</td>
                 <td>{{ game.countPlayers }}</td>
                 <td>{{ game.lvlGame }}</td>
-                <td>{{ game.nickUserCreated }}</td>
+                <td>{{ game.userCreatedGame }}</td>
               </tr>
               </tbody>
             </table>
@@ -113,15 +113,13 @@
           lvlGame: 'Легкий'
         },
 
-        listGames: [
-
-        ],
-        textMessage: ''
+        listGames: []
       }
     },
     created() {
       this.socket = this.$store.state.socket;
-      this.socket.addEventListener('open', this.rememberUserData);
+      // need fix auto log-in
+      // this.socket.addEventListener('open', this.rememberUserData);
     },
     methods: {
       rememberUserData() {
@@ -150,22 +148,25 @@
       createGame(e) {
         e.preventDefault();
         if (!this.$store.state.userData.loginSuccess) return this.callAnimationBanner();
-        const nickUserCreated = this.$store.state.userData.login;
+        const userCreatedGame = this.$store.state.userData.login;
         const nameGame = this.dataGame.titleCustomGame;
         const lvlGame = this.dataGame.lvlGame;
         const uidGame = parseInt(new Date().getTime()/1000);
         this.listGames.push({
-          nickUserCreated,
+          userCreatedGame,
           nameGame,
           lvlGame,
           uidGame,
           countPlayers: 1
         });
+        // Уведомить сервер,что создалась игра
       },
       connectToGame(e) {
         if (!this.$store.state.userData.loginSuccess) return this.callAnimationBanner();
         this.$store.commit('setParticipantGame', true);
-        this.$router.push({name: 'Game', params: {nameGame: `${e.currentTarget.dataset.nameGame}`}})
+        this.$router.push({name: 'Game', params: {nameGame: `${e.currentTarget.dataset.nameGame}`}});
+        // Уведомить сервер о том,что к данной игре подключились
+        // Через e.target.uid можно узнать id game
       },
       getCurrentTime() {
         const date = new Date();

@@ -12,7 +12,7 @@ export default new Vuex.Store({
 
     userData: {
       loginSuccess: false,
-      login: 'Anonymous',
+      login: 'Прохожий',
       avatar: 'https://thesocietypages.org/socimages/files/2009/05/vimeo.jpg',
       raiting: 0
     },
@@ -31,7 +31,7 @@ export default new Vuex.Store({
     setDefaultUser(state) {
       state.userData = {
         loginSuccess: false,
-        login: 'Anonymous',
+        login: 'Прохожий',
         avatar: 'https://thesocietypages.org/socimages/files/2009/05/vimeo.jpg',
         raiting: 0
       };

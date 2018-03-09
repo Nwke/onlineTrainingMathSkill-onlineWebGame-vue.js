@@ -34,14 +34,14 @@
     data() {
       return {
         listResultUsers: [{
-          displayName: 'admin1',
+          displayName: 'admin',
           rate: 3
         }],
         showSpinner: false
       }
     },
     created() {
-//      this.getRaitingUsers();
+    // this.getRaitingUsers();
     },
     methods: {
       getRaitingUsers() {

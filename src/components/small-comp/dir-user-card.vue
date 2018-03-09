@@ -4,10 +4,19 @@
     <div class="user-card__avatar-box">
       <img class="avatar-box__img" :src="$store.state.userData.avatar" alt="avatar-user">
     </div>
-    <span class="user-card__template-info">Ваш ник: <span class="text-success"> {{ $store.state.userData.login}} </span></span>
+    <span class="user-card__template-info">
+      Ваш ник:
+      <span class="text-success"> {{ $store.state.userData.login}} </span>
+    </span>
     <span class="user-card__template-info">Статус: <span class="text-success">Online</span></span>
-    <span class="user-card__template-info" >Вход выполнен: <span :class="$store.state.userData.loginSuccess === true ? ' text-success' : 'text-danger'"> {{ $store.state.userData.loginSuccess === true ? 'Да' : 'Нет'}} </span></span>
-    <span class="user-card__template-info">Текущий рейтинг: <span class="text-success"> {{ $store.state.userData.raiting }} </span></span>
+    <span class="user-card__template-info" >Вход выполнен: <span :class="$store.state.userData.loginSuccess === true
+     ? ' text-success'
+     : 'text-danger'"> {{ $store.state.userData.loginSuccess === true ? 'Да' : 'Нет'}} </span>
+    </span>
+    <span class="user-card__template-info">
+      <span>Текущий рейтинг: </span>
+      <span class="text-success"> {{ $store.state.userData.raiting }} </span>
+    </span>
     <label>Сменить аватар:
       <input type="file" value="Сменить аватар" accept="image/*" @change="avatarLoaded">
     </label>
@@ -24,7 +33,7 @@
 
 <script>
   export default {
-    name: 'useCard',
+    name: 'userCard',
     data() {
       return {
         socket: null

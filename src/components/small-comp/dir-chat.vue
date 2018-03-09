@@ -4,9 +4,13 @@
       <h3 class="message-box__title text-center">Test0Chat</h3>
       <div class="chat__template-message hidden">
         <div class="template-message__box-avatar rounded-circle">
-          <img class="avatar-box__img rounded-circle" src="https://thesocietypages.org/socimages/files/2009/05/vimeo.jpg" alt="avatar-user">
+          <img class="avatar-box__img rounded-circle"
+               src="https://thesocietypages.org/socimages/files/2009/05/vimeo.jpg"
+               alt="avatar-user">
         </div>
-        <span class="template_message__message"><span class="message__user text-danger">EVgeny:</span> <span class="message_text">Hellow may</span> </span>
+        <span class="template_message__message"><span class="message__user text-danger">EVgeny:</span>
+          <span class="message_text">Hellow may</span>
+        </span>
         <span class="template-message__time text-secondary font-italic">23:47:51</span>
       </div>
     </div>

@@ -3,21 +3,27 @@
     <div class="container">
       <div class="main__section section_center">
         <div class="section__main-auth wow fadeInDownBig">
-          <h2 class="main-auth__title text-effect-shadow">{{ $store.state.modePage === 'login' ? 'Sign to MarhV2' : 'Join to MarhV2' }}</h2>
+          <h2 class="main-auth__title text-effect-shadow">
+              {{ $store.state.modePage === 'login' ? 'Sign to MarhV2' : 'Join to MarhV2' }}
+          </h2>
           <form class="main-auth__form" @submit.prevent="authorization">
             <label for="login">Login</label>
             <input type="text" class="margin-bot-md" id="login" v-model="userData.login" required autofocus>
             <label for="password">Password</label>
             <input type="password" class="margin-bot-md" id="password" v-model="userData.pass" required>
 
-            <div class="alert alert-danger margin-bot-lg" role="alert" v-if="errorsAuth">
+            <div class="alert alert-danger margin-bot-lg" role="alert" v-if="errorAuth">
               {{ messageError }}
             </div>
-            <button type="submit" class="btn form__btn-submit margin-top-md">{{ $store.state.modePage === 'login' ? 'Войти на сайт' : 'Зарегистрироваться' }}</button>
+            <button type="submit" class="btn form__btn-submit margin-top-md">
+                {{ $store.state.modePage === 'login' ? 'Войти на сайт' : 'Зарегистрироваться' }}
+            </button>
           </form>
           <div class="main-auth__footer margin-bot-lg">
-            <span>{{ $store.state.modePage === 'login' ? 'New to MarhV2?': 'Registered on MarhV2?'}}</span>
-            <a href="#" @click.prevent="getAnotherPage">{{ $store.state.modePage === 'login' ? 'Create a account': 'Sign in account.' }}</a>
+            <span> {{ $store.state.modePage === 'login' ? 'New to MarhV2?': 'Registered on MarhV2?'}} </span>
+            <a href="#" @click.prevent="getAnotherPage">
+                {{ $store.state.modePage === 'login' ? 'Create a account': 'Sign in account.' }}
+            </a>
           </div>
         </div>
       </div>
@@ -44,7 +50,7 @@
         },
 
         messageError: '',
-        errorsAuth: false,
+        errorAuth: false,
       }
     },
     created () {
@@ -54,14 +60,15 @@
     watch: {
       '$route': 'setModePage',
       '$store.state.modePage': function () {
-        this.errorsAuth = false;
+        this.errorAuth = false;
         this.messageError = '';
       }
     },
     methods: {
       setModePage() {
+        console.log(this.$route);
         this.modePage = this.$route.params.modePage;
-        this.$store.commit('setModePage', this.$route.params.modePage);
+        this.$store.commit('setModePage', this.modePage);
       },
       getAnotherPage () {
         let path;
@@ -86,9 +93,10 @@
       },
       getResponseFromServerWithAuth(e) {
         const response = JSON.parse(e.data);
+        console.log(response);
         if (response.type === 'auth_error' || response.type === 'reg_error') {
           this.messageError = response.data;
-          this.errorsAuth = true;
+          this.errorAuth = true;
         } else {
           this.$router.push({name: 'Lobby'});
           const userData = {
@@ -98,38 +106,19 @@
             raiting: 0
           };
           this.$store.commit('setUserData', userData);
-          localStorage.setItem('userDataForLogin', JSON.stringify({
-            type: 'auth',
-            data: {
-              'user': this.userData.login,
-              'password': this.userData.pass
-            }
-          }));
-          this.errorsAuth = false;
+          // localStorage.setItem('userDataForLogin', JSON.stringify({
+          //   type: 'auth',
+          //   data: {
+          //     'user': this.userData.login,
+          //     'password': this.userData.pass
+          //   }
+          // }));
+          this.errorAuth = false;
         }
         this.socket.removeEventListener('message', this.getResponseFromServerWithAuth);
       },
     }
   }
-
-
-  import WOW from 'wow.js';
-
-  const wow = new WOW(
-    {
-      boxClass:     'wow',      // animated element css class (default is wow)
-      animateClass: 'animated', // animation css class (default is animated)
-      offset:       0,          // distance to the element when triggering the animation (default is 0)
-      mobile:       true,       // trigger animations on mobile devices (default is true)
-      live:         true,       // act on asynchronously loaded content (default is true)
-      callback:     function(box) {
-        // the callback is fired every time an animation is started
-        // the argument that is passed in is the DOM node being animated
-      },
-      scrollContainer: null // optional scroll container selector, otherwise use window
-    }
-  );
-  wow.init();
 
 </script>
 

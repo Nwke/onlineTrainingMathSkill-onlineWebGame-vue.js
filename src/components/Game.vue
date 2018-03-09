@@ -1,11 +1,5 @@
 <template>
   <main @keyup.13="sendAnswer">
-    <div class="animation_banner animation_banner__hidden">
-      <i class="fa fa-bell" aria-hidden="false"></i>
-      <span class="text_animation_banner">
-          {{ textBanner }}
-      </span>
-    </div>
     <div class="container">
       <article class="current-game">
           <section class="c-g__section_users_chat col-lg-12">
@@ -13,12 +7,27 @@
               <section class="section-about-game">
                 <div class="about-game__state-game">
                   <h3 class="about-game__title">Подключенные пользователи и их результат:</h3>
-                  <div class="template-user text-danger">Evgen: <span class="text-success"> 5 points</span> <span class="text-secondary">(lider lobby)</span> </div>
-                  <div class="template-user text-danger">Jenya: <span class="text-success">3 points</span></div>
+                  <div class="template-user text-danger">
+                    <span>Evgen:</span>
+                    <span class="text-success"> 5 points</span>
+                    <span class="text-secondary">(lider lobby)</span>
+                  </div>
+                  <div class="template-user text-danger">
+                    <span>Jenya:</span>
+                    <span class="text-success">3 points</span>
+                  </div>
                   <span class="text-secondary d-block">Всё происходит в реальном времени</span>
                   <div v-if="rightStartGame" class="control_btn_state_game">
-                    <button class="btn btn_def btn_size" v-if="testingComplete" type="button" id="btn-start" @click="startTesting">Начать игру</button>
-                    <button class="btn btn_def btn_size" v-else type="button" id="btn-end" @click="finishGame">Прервать</button>
+                    <button class="btn btn_def btn_size"
+                            v-if="testingComplete"
+                            type="button"
+                            id="btn-start"
+                            @click="startTesting">Начать игру</button>
+
+                    <button class="btn btn_def btn_size"
+                            v-else type="button"
+                            id="btn-end"
+                            @click="finishGame">Прервать</button>
                   </div>
                   <div v-else-if="testingComplete & !rightStartGame" class="alert alert-success control_btn_state_game" role="alert">
                     Ожидайте,когда лидер лобби начнёт игру!
@@ -61,7 +70,10 @@
             </div>
           </section>
         <section class="c-g__section-game col-lg-12">
-          <input v-model="dataCurrentTesting.userAnswer" class="field_answer" type="text" placeholder="Здесь будет отображаться ваш вводимый ответ" @input="processedAnswer">
+          <input v-model="dataCurrentTesting.userAnswer" class="field_answer"
+                 type="text"
+                 placeholder="Здесь будет отображаться ваш вводимый ответ"
+                 @input="checkTrueAnswer">
           <div class="section-game__numbers-field">
             <button type="button" class="btn btn-outline-info" @click="addNumber($event.target.value)" value="1">1</button>
             <button type="button" class="btn btn-outline-info" @click="addNumber($event.target.value)" value="2">2</button>
@@ -86,7 +98,6 @@
 
 
 <script>
-  import * as firebase from 'firebase'
 
   export default  {
     name: 'StartGame',
@@ -95,7 +106,7 @@
         socket: null,
         rightStartGame: false,
 
-        textBanner: 'Вы завершили испытание',
+        textBanner: 'Привет! Подожди начала игры!',
 
         testingComplete: true,
         listResultTest: [],
@@ -116,25 +127,31 @@
       }
     },
     created() {
-//      if (!this.$store.state.participantGame) this.$router.push({name: 'Lobby'});
+      // if (!this.$store.state.participantGame) this.$router.push({name: 'Lobby'});
       this.socket = this.$store.state.socket;
-      window.addEventListener('blur', this.lossFocusDuringGame)
+      this.callAnimationBanner();
+      window.addEventListener('blur', this.lossFocusDuringGame);
     },
     beforeDestroy() {
       this.$store.commit('setParticipantGame', false);
     },
     methods: {
+      callAnimationBanner() {
+        this.$store.commit('setAnimation', {
+          run: true,
+          textBanner: this.textBanner
+        });
+        this.textBanner = 'Раунд окончен'
+      },
       generateExample(min, max) {
-        let rand = min - 0.5 + Math.random() * (max - min + 1);
-        rand = Math.round(rand);
-        return rand;
+        return Math.round(min - 0.5 + Math.random() * (max - min + 1));
       },
       getNumber(range1, range2) {
         let number1 = this.generateExample(range1, range2);
         let number2 = this.generateExample(range1, range2);
         return [number1, number2]
       },
-      processedAnswer() {
+      checkTrueAnswer() {
         this.dataCurrentTesting.userAnswer = this.dataCurrentTesting.userAnswer.replace(/[^-.0-9]/ig, '');
         if (parseInt(this.dataCurrentTesting.userAnswer, 10) === this.dataCurrentTesting.correctAnswer) this.sendAnswer();
       },
@@ -150,6 +167,7 @@
         document.querySelector('.field_answer').focus();
         this.updateCurrentExample();
 
+        // ненадежные циклы
         setTimeout(() => {
           document.querySelector('#outputTime').innerText = timeForCurrentTesting--;
         }, 0);
@@ -194,7 +212,7 @@
         this.testingComplete = true;
         this.$store.commit('setStateGame', false);
         this.updateUsedFields();
-        this.animationBannerEndGame();
+        this.callAnimationBanner();
       },
       updateUsedFields() {
         if (document.querySelector('#outputTime')) document.querySelector('#outputTime').innerText = '';
@@ -216,7 +234,7 @@
       },
       addNumber(value) {
         this.dataCurrentTesting.userAnswer += value;
-        this.processedAnswer();
+        this.checkTrueAnswer();
       },
       removeAnswer() {
         this.dataCurrentTesting.userAnswer = '';
@@ -224,19 +242,6 @@
       lossFocusDuringGame() {
         if (!this.testingComplete) this.updateCurrentExample();
       },
-      animationBannerEndGame() {
-        setTimeout(() => {
-          document.querySelector('.animation_banner').classList.add('animation_banner_start')
-        }, 500);
-
-        setTimeout(() => {
-          document.querySelector('.animation_banner').classList.add('animation_banner_end')
-        }, 3000);
-
-        setTimeout(() => {
-          document.querySelector('.animation-banner').classList.remove('animation_banner-start', 'animation_banner_end')
-        }, 7000);
-      }
     }
   }
 
