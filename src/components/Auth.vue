@@ -70,7 +70,7 @@
         this.modePage = this.$route.params.modePage;
         this.$store.commit('setModePage', this.modePage);
       },
-      getAnotherPage () {
+      getAnotherPage() {
         let path;
         if (this.modePage === 'login') {
           path = {name: 'Auth', params: {modePage: 'registration'}};
@@ -82,6 +82,8 @@
       authorization() {
         const requestType = this.modePage === 'registration' ? 'reg' : 'auth';
 
+        this.socket.addEventListener('message', this.responseFromServerWithAuth);
+
         this.socket.send(JSON.stringify({
           type: requestType,
           data: {
@@ -89,15 +91,15 @@
             'password': this.userData.pass
           }
         }));
-        this.socket.addEventListener('message', this.getResponseFromServerWithAuth);
       },
-      getResponseFromServerWithAuth(e) {
+      responseFromServerWithAuth(e) {
         const response = JSON.parse(e.data);
-        console.log(response);
         if (response.type === 'auth_error' || response.type === 'reg_error') {
           this.messageError = response.data;
           this.errorAuth = true;
-        } else {
+        } else if (response.type === 'reg_ok') {
+          this.getAnotherPage();
+        } else if (response.type === 'auth_ok') {
           this.$router.push({name: 'Lobby'});
           const userData = {
             loginSuccess: true,
@@ -106,16 +108,10 @@
             raiting: 0
           };
           this.$store.commit('setUserData', userData);
-          // localStorage.setItem('userDataForLogin', JSON.stringify({
-          //   type: 'auth',
-          //   data: {
-          //     'user': this.userData.login,
-          //     'password': this.userData.pass
-          //   }
-          // }));
           this.errorAuth = false;
+          this.socket.removeEventListener('message', this.responseFromServerWithAuth);
+          localStorage.sessionForAutoSign = response.data.session;
         }
-        this.socket.removeEventListener('message', this.getResponseFromServerWithAuth);
       },
     }
   }

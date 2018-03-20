@@ -48,6 +48,9 @@ export default new Vuex.Store({
     setStateGame(state, boolValue) {
       state.gameStarted = boolValue;
     },
+    setRightStartGame(state, boolValue) {
+      state.rightStartGame = boolValue;
+    },
     setParticipantGame(state, boolValue) {
       state.participantGame = boolValue;
     },

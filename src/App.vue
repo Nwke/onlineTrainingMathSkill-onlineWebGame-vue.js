@@ -70,12 +70,10 @@ export default {
   watch: {
     '$route': function () {
       // bad logics name button
-      const arrayTopMenuButtons = document.querySelectorAll('.content__section-btn')[1].querySelectorAll('button');
+      const arrayTopMenuButtons = document.querySelectorAll('.btn_router');
       if (this.$router.currentRoute.name === 'Game') {
-        this.$store.commit('setNameControlButton', 'Покинуть текущую игру');
         arrayTopMenuButtons.forEach(elem => elem.disabled = true);
       } else {
-        this.$store.commit('setNameControlButton', 'Лобби');
         arrayTopMenuButtons.forEach(elem => elem.disabled = false);
       }
     },
@@ -84,10 +82,8 @@ export default {
       btnBack.disabled = this.$store.state.gameStarted;
     },
     '$store.state.animated.run': function () {
-      // NEED FIX CODE
       if (this.$store.state.animated.run) {
         const animStartContainer = this.createContainerAnimation('flipInX');
-
         document.querySelector('.main-header__content').appendChild(animStartContainer);
 
         setTimeout(() => {

@@ -17,6 +17,11 @@
                     <span class="text-success">3 points</span>
                   </div>
                   <span class="text-secondary d-block">Всё происходит в реальном времени</span>
+                  <button class="btn btn_def"
+                          @click="leaveGame">
+                    <span>Покинуть игру</span>
+                    <i class="fa fa-arrow-alt-square-right"></i>
+                  </button>
                   <div v-if="rightStartGame" class="control_btn_state_game">
                     <button class="btn btn_def btn_size"
                             v-if="testingComplete"
@@ -29,6 +34,9 @@
                             id="btn-end"
                             @click="finishGame">Прервать</button>
                   </div>
+
+
+
                   <div v-else-if="testingComplete & !rightStartGame" class="alert alert-success control_btn_state_game" role="alert">
                     Ожидайте,когда лидер лобби начнёт игру!
                   </div>
@@ -130,12 +138,27 @@
       // if (!this.$store.state.participantGame) this.$router.push({name: 'Lobby'});
       this.socket = this.$store.state.socket;
       this.callAnimationBanner();
+
       window.addEventListener('blur', this.lossFocusDuringGame);
-    },
-    beforeDestroy() {
-      this.$store.commit('setParticipantGame', false);
+      this.socket.addEventListener('message', this.splitterEvents);
     },
     methods: {
+      splitterEvents(e) {
+        const response = JSON.parse(e.data);
+        if (response.type === 'leave_ok') {
+          this.leaveIsOk();
+        }
+      },
+      leaveGame() {
+        this.socket.send({
+          type: 'leave',
+          data: ''
+        })
+      },
+      leaveIsOk () {
+        this.$router.push({name: 'Lobby'});
+        this.$store.commit('setParticipantGame', false);
+      },
       callAnimationBanner() {
         this.$store.commit('setAnimation', {
           run: true,

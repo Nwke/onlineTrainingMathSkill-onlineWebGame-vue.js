@@ -10,7 +10,7 @@
         <section class="block-game__section-settings">
           <h2 class="text-center">Настройки игры</h2>
           <fieldset>
-            <form class="section-settings__form-settings" @submit="createGame">
+            <form class="section-settings__form-settings" @submit="requestCreateGame">
               <label>
                 Выберите уровень сложности
                 <select required v-model="dataGame.lvlGame">
@@ -22,7 +22,7 @@
               </label>
               <label>
                 Напишите имя игры
-                <input type="text" maxlength="10" v-model="dataGame.titleCustomGame" @input="validateNameCustomGame" required>
+                <input type="text" maxlength="10" v-model="dataGame.uidNameGame" @input="validateNameCustomGame" required>
               </label>
               <button class="btn_def form-settings__btn-submit" title="Только для авторизованных пользователей" type="submit">
                 <span> Создать игру</span>
@@ -46,10 +46,10 @@
               </thead>
               <tbody>
               <tr>
-                <td>{{ game.nameGame }}</td>
-                <td>{{ game.countPlayers }}</td>
-                <td>{{ game.lvlGame }}</td>
-                <td>{{ game.userCreatedGame }}</td>
+                <td>{{ game.name }}</td>
+                <td>{{ game.players }}</td>
+                <td> Средний </td>
+                <td>{{ game.creator }}</td>
               </tr>
               </tbody>
             </table>
@@ -57,7 +57,7 @@
                     type="button" class="btn btn_def template-game__btn-connect"
                     :data-uid-game="game.uidGame"
                     :data-name-game="game.nameGame"
-                    @click="connectToGame">
+                    @click="requestConnectGame(game.nameGame)">
               <i class="fa fa-users" aria-hidden="true"></i>
               <span>Присоединиться</span>
             </button>
@@ -109,8 +109,8 @@
         textBanner: 'Сперва вам нужно авторизоваться',
 
         dataGame: {
-          titleCustomGame: '',
-          lvlGame: 'Легкий'
+          uidNameGame: '',
+          lvlGame: 'Легкий',
         },
 
         listGames: []
@@ -118,56 +118,109 @@
     },
     created() {
       this.socket = this.$store.state.socket;
-      // need fix auto log-in
-      // this.socket.addEventListener('open', this.rememberUserData);
+      this.socket.addEventListener('open', this.rememberUserData);
     },
     methods: {
       rememberUserData() {
+        this.checkCreatedGames();
         this.socket.removeEventListener('open', this.rememberUserData);
-        if (localStorage.getItem('userDataForLogin')) {
-          this.socket.addEventListener('message', this.getResponseFromServerWithAuth);
-          this.socket.send(JSON.stringify(JSON.parse(localStorage.getItem('userDataForLogin'))));
-        }
-      },
-      getResponseFromServerWithAuth(e) {
-        const response = JSON.parse(e.data);
-        if (response.type !== 'auth_error') {
-          const userData = {
-            loginSuccess: true,
-            login: JSON.parse(localStorage.getItem('userDataForLogin')).data.user,
-            avatar: 'https://thesocietypages.org/socimages/files/2009/05/vimeo.jpg',
-            raiting: 0
+        this.socket.addEventListener('message', this.splitterEvents);
+
+        if (localStorage.getItem('sessionForAutoSign')) {
+          const data = {
+            type: 'session_auth',
+            data: {
+              session: localStorage.getItem('sessionForAutoSign')
+            }
           };
-          this.$store.commit('setUserData', userData);
+          this.socket.send(JSON.stringify(data));
         }
-        this.socket.removeEventListener('message', this.getResponseFromServerWithAuth);
       },
-      validateNameCustomGame() {
-        this.dataGame.titleCustomGame = this.dataGame.titleCustomGame.replace(/\W+/gi, '');
+
+      splitterEvents(e) {
+        const response = JSON.parse(e.data);
+        console.log(response);
+        if (response.type === 'auth_ok') {
+          this.getResponseFromServerWithAuth(response);
+        } else if (response.type === 'create_game_ok') {
+          this.createGameIsOk();
+        } else if (response.type === 'game_created') {
+          this.updateListGames(response);
+        } else if (response.type === 'create_game_error') {
+          this.textBanner = 'Игра с таким именем уже существует!';
+          this.callAnimationBanner();
+          this.textBanner = 'Сперва вам нужно авторизоваться';
+        } else if (response.type === 'success_join') {
+          this.connectGame(response);
+        } else if (response.type === 'ret_game_list') {
+          this.listGames = response.data;
+        }
       },
-      createGame(e) {
+
+      checkCreatedGames() {
+        console.log('check_game');
+        this.socket.send(JSON.stringify({
+          type: 'games_list',
+          data: null
+        }))
+      },
+
+      connectGame(response) {
+        console.log(response);
+        this.$store.commit('setParticipantGame', true);
+        this.$router.push({name: 'Game', params: {nameGame: response.data.game.name}});
+      },
+
+      createGameIsOk() {
+        this.$router.push({name: 'Game', params: {nameGame: this.dataGame.uidNameGame}});
+        this.$store.commit('setRightStartGame', true);
+      },
+
+      requestCreateGame(e) {
         e.preventDefault();
         if (!this.$store.state.userData.loginSuccess) return this.callAnimationBanner();
-        const userCreatedGame = this.$store.state.userData.login;
-        const nameGame = this.dataGame.titleCustomGame;
-        const lvlGame = this.dataGame.lvlGame;
-        const uidGame = parseInt(new Date().getTime()/1000);
-        this.listGames.push({
-          userCreatedGame,
-          nameGame,
-          lvlGame,
-          uidGame,
-          countPlayers: 1
-        });
-        // Уведомить сервер,что создалась игра
+        const dataGame = {
+          type: 'create_game',
+          data: {
+            name: this.dataGame.uidNameGame,
+            slots: 2,
+          }
+        };
+
+        this.socket.send(JSON.stringify(dataGame))
       },
-      connectToGame(e) {
+
+      requestConnectGame(nameGame) {
         if (!this.$store.state.userData.loginSuccess) return this.callAnimationBanner();
-        this.$store.commit('setParticipantGame', true);
-        this.$router.push({name: 'Game', params: {nameGame: `${e.currentTarget.dataset.nameGame}`}});
-        // Уведомить сервер о том,что к данной игре подключились
-        // Через e.target.uid можно узнать id game
+        this.socket.send(JSON.stringify({
+          type: 'join',
+          data: {name: nameGame}
+        }))
       },
+
+      updateListGames(response) {
+        const dataGame = {
+          name: response.data.name,
+          creator: response.data.creator,
+          players: response.players,
+        };
+        this.listGames.push(dataGame)
+      },
+
+      getResponseFromServerWithAuth(response) {
+        const userData = {
+          loginSuccess: true,
+          login: response.data.user,
+          avatar: 'https://thesocietypages.org/socimages/files/2009/05/vimeo.jpg',
+          raiting: 1
+        };
+
+        this.$store.commit('setUserData', userData);
+      },
+      validateNameCustomGame() {
+        this.dataGame.uidNameGame = this.dataGame.uidNameGame.replace(/\W+/gi, '');
+      },
+
       getCurrentTime() {
         const date = new Date();
         const hours = date.getHours();
